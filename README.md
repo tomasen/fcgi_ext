@@ -1,8 +1,8 @@
 ##Migrating from php(LEMP) to Golang in large scale
 
 In modern age, many sites are built on what we call - [LEMP](http://en.wikipedia.org/wiki/LAMP_\(software_bundle\)) solution. Which typically include nginx + php + mysql(or NoSQL databases) now.   
-For system administrators of the web site with large traffic, should know the struggles of fighting with concurrency and availability of php. Facebook developed a monster project as [HipHop](https://developers.facebook.com/blog/post/2010/02/02/hiphop-for-php--move-fast/) just for such reason!
-As a Golang supporter, even for those websites or web applications much smaller than the Facebook, rewrite the website in Golang might not be a reasonable option, since most of them have too huge and too complex PHP codebase.   
+For system administrators of the web site with large traffic, should know the struggles of fighting with concurrency and availability of php. Facebook developed a monster project as [HipHop](https://developers.facebook.com/blog/post/2010/02/02/hiphop-for-php--move-fast/) just for such reason!    
+As a Golang supporter, even for smaller scale websites or web applications, rewrite the website in Golang still seems not be a reasonable option. Since most of them already have too huge and way too complex PHP codebase.    
 But the concurrency and efficiency of Golang is so attempting that I hereby propose a solution of migrating method, from php to Golang, one step a time.
 
 ###The advantage of Golang
