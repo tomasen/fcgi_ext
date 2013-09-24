@@ -125,13 +125,17 @@ func (r *response) Close() error {
 	return r.w.Close()
 }
 
+type Handler interface {
+  ServeFCGI(http.ResponseWriter, *http.Request, map[string]string)
+}
+    
 type child struct {
 	conn     *conn
-	handler  http.Handler
+	handler  Handler
 	requests map[uint16]*request // keyed by request ID
 }
 
-func newChild(rwc io.ReadWriteCloser, handler http.Handler) *child {
+func newChild(rwc io.ReadWriteCloser, handler Handler) *child {
 	return &child{
 		conn:     newConn(rwc),
 		handler:  handler,
@@ -244,7 +248,8 @@ func (c *child) serveRequest(req *request, body io.ReadCloser) {
 		c.conn.writeRecord(typeStderr, req.reqId, []byte(err.Error()))
 	} else {
 		httpReq.Body = body
-		c.handler.ServeHTTP(r, httpReq)
+		httpReq.RequestURI = r.req.params["REQUEST_URI"]
+		c.handler.ServeFCGI(r, httpReq, r.req.params)
 	}
 	r.Close()
 	c.conn.writeEndRequest(req.reqId, 0, statusRequestComplete)
@@ -269,7 +274,7 @@ func (c *child) serveRequest(req *request, body io.ReadCloser) {
 // to reply to them.
 // If l is nil, Serve accepts connections from os.Stdin.
 // If handler is nil, http.DefaultServeMux is used.
-func Serve(l net.Listener, handler http.Handler) error {
+func Serve(l net.Listener, handler Handler) error {
 	if l == nil {
 		var err error
 		l, err = net.FileListener(os.Stdin)
@@ -279,7 +284,7 @@ func Serve(l net.Listener, handler http.Handler) error {
 		defer l.Close()
 	}
 	if handler == nil {
-		handler = http.DefaultServeMux
+		return errors.New("fcgi.Handler is required")
 	}
 	for {
 		rw, err := l.Accept()
