@@ -159,9 +159,8 @@ Only use PHP to process data instead i/o operation that may require waiting, lik
 * Don't have the pressure or the risk of rewriting the whole system or application may bring.
 
 ###Practice
-Here we have an old system design include: Nginx, search.php to process the search request to programed  term and send them to a solr(search engine) service. When solr response the search results, search.php will also query database. After that, php render the results to more beautiful html language and output to nginx.    
-We notice php process will jammed the system if solr become unstable when search traffic increased.  
+Here we have an old system design include nginx and search.php to process search request to term that can be sent to a solr(search engine) service. When solr response with the search results, search.php will render the results to more beautiful html language and output to nginx. We notice php process will jammed the system if solr become unstable during search traffic increase.
   
-For a start, we write a Golang daemon that use fcgi\_ext to handle fcgi request from nginx. The Golang daemon in charge of communication with solr. Only when the Golang daemon received the result, it send fcgi request to php\_fcgi(post\_search.php) to process data and render. post_search.php will output html to the Golang daemon, then Golang daemon flush the output to nginx.
+For a start, we write a Golang daemon that use fcgi\_ext to handle fcgi request from nginx. The Golang daemon will be in charge of communication with nginx and solr. Only when the Golang daemon received the results from solr, it initial another fcgi request to php\_fcgi(post\_search.php) to process data and render the web page. Then post_search.php should output html back to the Golang daemon, and the Golang daemon flush the output to nginx.
 
 The result is promising, of cause. Golang is so good of handling concurrent long polling request, therefore you will see significant decrease of system resource usage. And for the best part, again, you don't have to face the challenge of rewriting or converting all you php source code to Golang at once. The migration will be under control and very stable for production service.
