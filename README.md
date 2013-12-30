@@ -5,6 +5,8 @@ For system administrators of the web site with large traffic, should know the st
 As a Golang fan, even in my point of view, even for smaller scale websites or web applications, rewriting the website in Golang still not seems to be a reasonable option. Because most of them already have a huge PHP codebase and way too complicated frameworks. Which is an absolute deal-breaker.   
 But the concurrency and efficiency of Golang is so attempting that I hereby propose a solution of migrating method, from php to Golang, just one step a time.
 
+####Status: In Development (future versions may change API)
+
 ###The advantage of Golang
 * High concurrency
 * Fast performance and memory efficiency
