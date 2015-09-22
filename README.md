@@ -1,19 +1,21 @@
-##Migrating from php(LEMP) to Golang in large scale
+### Migrating from php(LEMP) to Golang in large scale
+
+[![Build Status](https://travis-ci.org/tomasen/fcgi_ext.svg?branch=master)](https://travis-ci.org/tomasen/fcgi_ext)
+[![GoDoc](https://godoc.org/github.com/tomasen/fcgi_ext?status.svg)](http://godoc.org/github.com/tomasen/fcgi_ext)
 
 In modern age, many sites are built on what we call - [LEMP](http://en.wikipedia.org/wiki/LAMP_\(software_bundle\)) solution. Which typically include nginx + php + mysql(or NoSQL databases) now.   
 For system administrators of the web site with large traffic, should know the struggles of fighting with concurrency and availability of php. Facebook developed a monster project as [HipHop](https://developers.facebook.com/blog/post/2010/02/02/hiphop-for-php--move-fast/) just for such reason!    
 As a Golang fan, even in my point of view, even for smaller scale websites or web applications, rewriting the website in Golang still not seems to be a reasonable option. Because most of them already have a huge PHP codebase and way too complicated frameworks. Which is an absolute deal-breaker.   
 But the concurrency and efficiency of Golang is so attempting that I hereby propose a solution of migrating method, from php to Golang, just one step a time.
 
-####Status: In Development (future versions may change API)
 
-###The advantage of Golang
+#### The advantage of Golang
 * High concurrency
 * Fast performance and memory efficiency
 * Easy to learn
 
 
-###Problem that we are facing
+#### Problem that we are facing
 
 * the max concurrent requests that php can handle is limited to the maximum number of php process can be running at the same time in the system. And php process is resource consuming.
 * when there is bottleneck happened in the backend, for example: unstable connection to database or slow query, large amount of traffic will jammed in front of web server because php don't have the resource to process next requests anymore.
@@ -33,6 +35,8 @@ Only use PHP to process data instead i/o operation that may require waiting, lik
 * Use Golang to do the heavy lifting. And use the php code that we current have, to take care the rest.
 
 ####Example
+
+```go
     package main
 
     import (
@@ -154,6 +158,7 @@ Only use PHP to process data instead i/o operation that may require waiting, lik
 
       }
     }
+```
 
 ####The advantages of this solution
 * Very easy to get started, less than one hundred lines of Golang codes is enough to get the migration up and running
