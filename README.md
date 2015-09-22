@@ -29,7 +29,7 @@ Only use PHP to process data instead i/o operation that may require waiting, lik
 
 ####Steps
 * Put a Golang service between web server and php, connect them by fast-cgi.   
-  + use Golang package [fcgi\_ext](https://bitbucket.org/PinIdea/fcgi_ext) and [fcgi\_client](https://bitbucket.org/PinIdea/fcgi_client) to build a [daemon](https://bitbucket.org/PinIdea/zero-downtime-daemon)
+  + use Golang package [fcgi\_ext](https://github.com/tomasen/fcgi_ext) and [fcgi\_client](https://github.com/tomasen/fcgi_client) to build a [daemon](https://github.com/tomasen/zero-downtime-daemon)
   + typical flow will be:    
   nginx <-> fcgi\_ext+fcgi\_client(golang) <-> php\_fcgi
 * Use Golang to do the heavy lifting. And use the php code that we current have, to take care the rest.
@@ -45,9 +45,9 @@ Only use PHP to process data instead i/o operation that may require waiting, lik
      "log"
      "flag"
      "net"
-     "bitbucket.org/PinIdea/fcgi_ext"
-     "bitbucket.org/PinIdea/fcgi_client"
-     "bitbucket.org/PinIdea/zero-downtime-daemon"
+     "github.com/tomasen/fcgi_ext"
+     "github.com/tomasen/fcgi_client"
+     "github.com/tomasen/zero-downtime-daemon"
     )
 
     const (
