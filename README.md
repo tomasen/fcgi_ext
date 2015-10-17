@@ -1,38 +1,39 @@
-### Migrating from php(LEMP) to Golang in large scale
+### Migrating from php(LEMP) to Golang on a large scale
 
 [![Build Status](https://travis-ci.org/tomasen/fcgi_ext.svg?branch=master)](https://travis-ci.org/tomasen/fcgi_ext)
 [![GoDoc](https://godoc.org/github.com/tomasen/fcgi_ext?status.svg)](http://godoc.org/github.com/tomasen/fcgi_ext)
 
-In modern age, many sites are built on what we call - [LEMP](http://en.wikipedia.org/wiki/LAMP_\(software_bundle\)) solution. Which typically include nginx + php + mysql(or NoSQL databases) now.   
-For system administrators of the web site with large traffic, should know the struggles of fighting with concurrency and availability of php. Facebook developed a monster project as [HipHop](https://developers.facebook.com/blog/post/2010/02/02/hiphop-for-php--move-fast/) just for such reason!    
-As a Golang fan, even in my point of view, even for smaller scale websites or web applications, rewriting the website in Golang still not seems to be a reasonable option. Because most of them already have a huge PHP codebase and way too complicated frameworks. Which is an absolute deal-breaker.   
-But the concurrency and efficiency of Golang is so attempting that I hereby propose a solution of migrating method, from php to Golang, just one step a time.
+In the modern age, many sites are built on what we call - [LEMP](http://en.wikipedia.org/wiki/LAMP_\(software_bundle\)) stack. Which typically include nginx + php + mysql(or NoSQL databases).   
+For system administrators of websites with large amount of traffic, should know the struggles of fighting with concurrency and availability of php is well known. Facebook developed a monster project known as [HipHop](https://developers.facebook.com/blog/post/2010/02/02/hiphop-for-php--move-fast/) just for such reason!    
+Even as a Golang fan,  rewriting a website in Golang still does not seems to be a reasonable option even if they are small scale websites or web applications. Because most of them already have a huge PHP codebase and way too complicated framework. Which is an absolute deal-breaker.   
+But the concurrency and efficiency of Golang is so tempting that I hereby propose a solution of method of migrating method, from php to Golang, which requires just one step a time.
 
 
 #### The advantage of Golang
 * High concurrency
-* Fast performance and memory efficiency
-* Easy to learn
+* Faster performance and better memory efficiency
+* Easy to learn and maintainance
 
 
-#### Problem that we are facing
+#### The problem that we face
 
-* the max concurrent requests that php can handle is limited to the maximum number of php process can be running at the same time in the system. And php process is resource consuming.
-* when there is bottleneck happened in the backend, for example: unstable connection to database or slow query, large amount of traffic will jammed in front of web server because php don't have the resource to process next requests anymore.
-* Golang still lack of many library support, which are already used in php massively.
+* the max concurrent requests that php can handle is limited to the maximum number of php process can be running at the same time on a single server. And the php process is resource consuming.
+* when there is a bottleneck happening in the backend, for example: unstable connection to the database or slow queries, the large amount of traffic will jam front web server because php doesn't have the resources to process the next request anymore.
+* Golang still lack many library, which are already used in php massively.
 
-###Solution
+###The Solution
 
-####Basic principle
-Only use Golang to replace part of php application process that Golang is good at handling(long polling and concurrency etc.).    
-Only use PHP to process data instead i/o operation that may require waiting, like slow query or connect to remote service etc.
+####The Basic principles
+
+Only use Golang to replace the parts of php application process that Golang is good at handling(long polling and concurrency etc.).    
+Only use PHP to process data instead of i/o operations that may require waiting, like slow queries or connecting to remote service etc.
 
 ####Steps
-* Put a Golang service between web server and php, connect them by fast-cgi.   
+* put a Golang service handler between web server and php, and connect them by fast-cgi.   
   + use Golang package [fcgi\_ext](https://github.com/tomasen/fcgi_ext) and [fcgi\_client](https://github.com/tomasen/fcgi_client) to build a [daemon](https://github.com/tomasen/zero-downtime-daemon)
-  + typical flow will be:    
+  + the typical flow will be:    
   nginx <-> fcgi\_ext+fcgi\_client(golang) <-> php\_fcgi
-* Use Golang to do the heavy lifting. And use the php code that we current have, to take care the rest.
+* Use Golang to do the heavy lifting. And use the php code that we currently have, to take care the rest.
 
 ####Example
 
@@ -162,12 +163,12 @@ Only use PHP to process data instead i/o operation that may require waiting, lik
 
 ####The advantages of this solution
 * Very easy to get started, less than one hundred lines of Golang codes is enough to get the migration up and running
-* Can execute step by step, not even need to be module by module. Just few lines here and there, you will get tremendous improve if plan it right
-* Don't have the pressure or the risk of rewriting the whole system or application may bring.
+* Can execute step by step, not even need to be module by module. Just a few lines here and there, you will get tremendous improvement if planned out right
+* Don't have the pressure or the risk of rewriting the whole system or bringing the whole application.
 
 ###Practice
-Here we have an old system design include nginx and search.php to process search request to term that can be sent to a solr(search engine) service. When solr response with the search results, search.php will render the results to more beautiful html language and output to nginx. We notice php process will jammed the system if solr become unstable during search traffic increase.
+Here we have an old system design including nginx and search.php to process search request terms that will be sent to a solr(search engine) service. When solr responds with the search results, search.php will render the results to more higher level languag of html and output to nginx. We notice php process will jam up the system if solr become unstable during periods of high traffic.
   
-For a start, we write a Golang daemon that use fcgi\_ext to handle fcgi request from nginx. The Golang daemon will be in charge of communication with nginx and solr. Only when the Golang daemon received the results from solr, it initial another fcgi request to php\_fcgi(post\_search.php) to process data and render the web page. Then post_search.php should output html back to the Golang daemon, and the Golang daemon flush the output to nginx.
+For a start, we write a Golang daemon that uses fcgi\_ext to handle fcgi request from nginx. The Golang daemon will be in charge of all communication between nginx and solr. Only when the Golang daemons received the results from solr, will it initial another fcgi request to php\_fcgi(post\_search.php) to process the data and render the web page. Then post_search.php should then output html back to the Golang daemon, and the Golang daemon will flush the output to nginx.
 
-The result is promising, of cause. Golang is so good of handling concurrent long polling request, therefore you will see significant decrease of system resource usage. And for the best part, again, you don't have to face the challenge of rewriting or converting all you php source code to Golang at once. The migration will be under control and very stable for production service.
+The result is promising, of course. Golang is so good at handling concurrent long polling requests, therefore you will see significant decrease of system resource usage. And for the best part, again, you don't have to face the challenge of rewriting or converting all you php source code to Golang at once. The migration will be under control and very stable production service.
